@@ -1,4 +1,9 @@
 const Discord = require("discord.js");
+const avconv = require("avconv");
+const ffmpeg = require("ffmpeg-static");
+const ytdl = require("ytdl-core");
+const opusscript = require("opusscript");
+const { getInfo } = require('ytdl-getinfo');
 const client = new Discord.Client();
 
 client.login('NzIxMjg0Mjc1MDIyMDY5ODAw.XuSb7w.StFgogj_oLXm5Vm8393t0DMCc08');
@@ -11,23 +16,22 @@ client.once('ready', () => {
     });
 });
 
-
-
-
-
 client.on('message', async message => {
-    // Voice only works in guilds, if the message does not come from a guild,
-    // we ignore it
     if (!message.guild) return;
 
     if (message.content === '/join') {
-        // Only try to join the sender's voice channel if they are in one themselves
+
         if (message.member.voice.channel) {
             const connection = await message.member.voice.channel.join();
-            const ytdl = require('ytdl-core');
-            connection.play(ytdl('https://www.youtube.com/watch?v=ZlAU_w7-Xp8', { filter: 'audioonly' }));
+            const url = 'https://www.youtube.com/watch?v=A8pOVirjGF0'
+            const video = ytdl(url, { filter: 'audioonly' });
+            connection.play(video);
+            ytdl(url)
+                .on('info', (info) => {
+                    console.log(info.length_seconds);
+                });
         } else {
-            message.reply('You need to join a voice channel first!');
+            message.reply('Musisz być na kanale!');
         }
     }
 });

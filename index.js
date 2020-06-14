@@ -3,10 +3,14 @@ const avconv = require("avconv");
 const ffmpeg = require("ffmpeg-static");
 const ytdl = require("ytdl-core");
 const opusscript = require("opusscript");
-const { getInfo } = require('ytdl-getinfo');
+const { getInfo } = require('ytdl-getinfo')
+const fs = require('fs');
+
 const client = new Discord.Client();
 
-client.login('NzIxMjg0Mjc1MDIyMDY5ODAw.XuSb7w.StFgogj_oLXm5Vm8393t0DMCc08');
+var token = JSON.parse(fs.readFileSync('token.json'));
+
+client.login(token.DiscordToken);
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -49,7 +53,6 @@ client.on('message', async message => {
             const url = info.items[0].id;
             console.log(url);
             if (message.member.voice.channel) {
-
                 const connection = await message.member.voice.channel.join();
                 await url;
                 const video = ytdl(url, { filter: 'audioonly' });
@@ -65,9 +68,12 @@ client.on('message', async message => {
     }
 });
 
+
 client.on('message', async message => {
     if (!message.guild) return;
     var stopcmd = "/stop"
-    if (message.content.startsWith(searchcmd)) {
-        Discord.VoiceState.
+    if (message.content.startsWith(stopcmd)) {
+        console.log("leavin");
+        message.member.guild.me.voice.kick();
     }
+});

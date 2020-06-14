@@ -10,28 +10,64 @@ client.login('NzIxMjg0Mjc1MDIyMDY5ODAw.XuSb7w.StFgogj_oLXm5Vm8393t0DMCc08');
 
 client.once('ready', () => {
     console.log('Ready!');
-    client.user.setActivity("your mom gay", {
-        type: "STREAMING",
-        url: "twitch.tv",
-    });
 });
 
 client.on('message', async message => {
     if (!message.guild) return;
-
-    if (message.content === '/join') {
-
+    var playcmd = "/play"
+    if (message.content.startsWith(playcmd)) {
+        const args = message.content.slice(playcmd.length).split(' ');
+        console.log(args[1])
+        if (args[1] === undefined) {
+            message.reply('Podaj link piosenki! (/play [link])');
+            return;
+        }
         if (message.member.voice.channel) {
             const connection = await message.member.voice.channel.join();
-            const url = 'https://www.youtube.com/watch?v=A8pOVirjGF0'
-            const video = ytdl(url, { filter: 'audioonly' });
+            const url = args[1];
+            const video = ytdl(url, {filter: 'audioonly'});
             connection.play(video);
-            ytdl(url)
-                .on('info', (info) => {
-                    console.log(info.length_seconds);
-                });
+            ytdl(url).on('info', (info) => {
+                console.log(info.length_seconds);
+            });
         } else {
             message.reply('Musisz być na kanale!');
         }
     }
 });
+
+client.on('message', async message => {
+    if (!message.guild) return;
+    var searchcmd = "/search"
+    if (message.content.startsWith(searchcmd)) {
+        const args = message.content.slice(searchcmd.length);
+        if (args === undefined){
+            message.reply('Podaj nazwę piosenki! (/search [nazwa])');
+            return;
+        }
+        getInfo(args).then(async info => {
+            const url = info.items[0].id;
+            console.log(url);
+            if (message.member.voice.channel) {
+
+                const connection = await message.member.voice.channel.join();
+                await url;
+                const video = ytdl(url, { filter: 'audioonly' });
+                connection.play(video);
+                ytdl(url).on('info', (info) => {
+                    console.log(info.length_seconds);
+                });
+            } else {
+                message.reply('Musisz być na kanale!');
+            }
+        })
+
+    }
+});
+
+client.on('message', async message => {
+    if (!message.guild) return;
+    var stopcmd = "/stop"
+    if (message.content.startsWith(searchcmd)) {
+        Discord.VoiceState.
+    }

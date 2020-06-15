@@ -9,6 +9,7 @@ const fs = require('fs');
 const client = new Discord.Client();
 
 var token = JSON.parse(fs.readFileSync('token.json'));
+var commands = JSON.parse(fs.readFileSync('commands.json'));
 
 client.login(token.DiscordToken);
 
@@ -18,24 +19,32 @@ client.once('ready', () => {
 
 client.on('message', async message => {
     if (!message.guild) return;
-    var playcmd = "/play"
+    var playcmd = commands.play.command;
     if (message.content.startsWith(playcmd)) {
         const args = message.content.slice(playcmd.length).split(' ');
         console.log(args[1])
         if (args[1] === undefined) {
-            message.reply('Podaj link piosenki! (/play [link])');
+            message.reply(commands.play.command);
             return;
         }
         if (message.member.voice.channel) {
-            const connection = await message.member.voice.channel.join();
-            const url = args[1];
-            const video = ytdl(url, {filter: 'audioonly'});
-            connection.play(video);
-            ytdl(url).on('info', (info) => {
-                console.log(info.length_seconds);
-            });
+            try {
+                const connection = await message.member.voice.channel.join();
+                const url = args[1];
+                const video = ytdl(url, {filter: 'audioonly'});
+                connection.play(video);
+                ytdl(url).on('info', (info) => {
+                    console.log(info.length_seconds);
+                });
+            }
+            catch(err) {
+                /*nothing*/
+            }
+            finally {
+                message.reply(commands.voiceerror);
+            }
         } else {
-            message.reply('Musisz być na kanale!');
+            message.reply(commands.mustbe);
         }
     }
 });

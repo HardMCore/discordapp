@@ -3,19 +3,24 @@ const avconv = require("avconv");
 const ffmpeg = require("ffmpeg-static");
 const ytdl = require("ytdl-core");
 const opusscript = require("opusscript");
-const { getInfo } = require('ytdl-getinfo')
+const { getInfo } = require('ytdl-getinfo');
 
 const client = new Discord.Client();
 
-var token = require('./token.json')
-var commands = require('./commands.json')
+//Configuration files
+const token = require('./token.json');
+const commands = require('./commands.json');
 
+//Global variables
+var videourl;
+
+//Logging in
 client.login(token.DiscordToken);
-
 client.once('ready', () => {
     console.log('Ready!');
 });
 
+//commands
 client.on('message', async message => {
     if (!message.guild) return;
     var playcmd = commands.play.command;
@@ -26,23 +31,26 @@ client.on('message', async message => {
             return;
         }
         if (message.member.voice.channel) {
-            const url = args[1];
-            var validurl = ytdl.validateURL(url);
+            videourl = args[1];
+            var validurl = ytdl.validateURL(videourl);
 
             console.log(validurl);
+            console.log(videourl);
 
             if(validurl === false) {
                 message.reply(commands.voiceerror);
-                return;
+            }
+            else {
+                const video = ytdl(videourl, {filter: 'audioonly'});
+
+                const connection = await message.member.voice.channel.join();
+                connection.play(video);
+                ytdl(videourl).on('info', (info) => {
+                    console.log(info.length_seconds);
+                });
+                return videourl;
             }
 
-            const video = ytdl(url, {filter: 'audioonly'});
-
-            const connection = await message.member.voice.channel.join();
-            connection.play(video);
-            ytdl(url).on('info', (info) => {
-                console.log(info.length_seconds);
-            });
         } else {
             message.reply(commands.mustbe);
         }
@@ -59,16 +67,17 @@ client.on('message', async message => {
             return;
         }
         getInfo(args).then(async info => {
-            const url = info.items[0].id;
-            console.log(url);
+            videourl = info.items[0].id;
+            console.log(videourl);
             if (message.member.voice.channel) {
                 const connection = await message.member.voice.channel.join();
-                await url;
-                const video = ytdl(url, { filter: 'audioonly' });
+                await videourl;
+                const video = ytdl(videourl, { filter: 'audioonly' });
                 connection.play(video);
-                ytdl(url).on('info', (info) => {
+                ytdl(videourl).on('info', (info) => {
                     console.log(info.length_seconds);
                 });
+                return videourl;
             }
             else {
                 message.reply(commands.mustbe);
@@ -83,12 +92,26 @@ client.on('message', async message => {
     if (!message.guild) return;
     var stopcmd = "/stop"
     if (message.content.startsWith(stopcmd)) {
-        console.log("leavin");
         message.member.guild.me.voice.kick();
     }
 });
 
 client.on('message', async message => {
     if (!message.guild) return;
-    var stopcmd = "/stop"
-    if (message.content.startsWith(stopcmd)) {
+    var repeatcmd = commands.repeat.command;
+    if (message.content.startsWith(repeatcmd)) {
+        const args = message.content.slice(repeatcmd.length).split(' ');
+        if (args[1] === undefined) {
+            console.log(videourl);
+            if(videourl === undefined || videourl === null) {
+                message.reply(commands.repeat.nourl + "\n" + commands.repeat.howto);
+            }
+            else {
+                console.log(videourl);
+            }
+        }
+        else {
+            /*validate link and play it...*/
+        }
+    }
+});

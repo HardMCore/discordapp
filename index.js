@@ -34,9 +34,6 @@ client.on('message', async message => {
             videourl = args[1];
             var validurl = ytdl.validateURL(videourl);
 
-            console.log(validurl);
-            console.log(videourl);
-
             if(validurl === false) {
                 message.reply(commands.voiceerror);
             }
@@ -48,7 +45,6 @@ client.on('message', async message => {
                 ytdl(videourl).on('info', (info) => {
                     console.log(info.length_seconds);
                 });
-                return videourl;
             }
 
         } else {
@@ -74,10 +70,10 @@ client.on('message', async message => {
                 await videourl;
                 const video = ytdl(videourl, { filter: 'audioonly' });
                 connection.play(video);
+                console.log(message.member.guild.me.voice.valueOf());
                 ytdl(videourl).on('info', (info) => {
                     console.log(info.length_seconds);
                 });
-                return videourl;
             }
             else {
                 message.reply(commands.mustbe);
@@ -87,31 +83,10 @@ client.on('message', async message => {
     }
 });
 
-
 client.on('message', async message => {
     if (!message.guild) return;
     var stopcmd = "/stop"
     if (message.content.startsWith(stopcmd)) {
         message.member.guild.me.voice.kick();
-    }
-});
-
-client.on('message', async message => {
-    if (!message.guild) return;
-    var repeatcmd = commands.repeat.command;
-    if (message.content.startsWith(repeatcmd)) {
-        const args = message.content.slice(repeatcmd.length).split(' ');
-        if (args[1] === undefined) {
-            console.log(videourl);
-            if(videourl === undefined || videourl === null) {
-                message.reply(commands.repeat.nourl + "\n" + commands.repeat.howto);
-            }
-            else {
-                console.log(videourl);
-            }
-        }
-        else {
-            /*validate link and play it...*/
-        }
     }
 });

@@ -12,10 +12,5 @@
   "stop": {
     "command": "/stop",
     "howto": "This command stops the bot from playing music"
-  },
-  "repeat": {
-    "command": "/repeat",
-    "howto": "Use /repeat [optional link] to let last played song play over and over, or you can give a link to a song to be repeated",
-    "nourl": "No last played song found, you must play one or provide a link"
   }
 }

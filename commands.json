@@ -1,0 +1,16 @@
+{
+  "voiceerror": "There was a problem found! You probably didn't give a valid link, or you should contact developer!",
+  "mustbe": "You must be on a voice channel to make this work!",
+  "play": {
+    "command": "/play",
+    "howto": "Use /play [link] to start playing a music from link (you must be on a voice channel)"
+  },
+  "search": {
+    "command": "/search",
+    "howto": "Use /search [youtube video name] to start search for a video (you must be on a voice channel)"
+  },
+  "stop": {
+    "command": "/stop",
+    "howto": "This command stops the bot from playing music"
+  }
+}
